@@ -223,7 +223,7 @@ def main():
             print(f"警告：无效的端口号参数 '{sys.argv[1]}'，将使用默认端口7860")
 
     demo = create_interface()
-    demo.launch(server_name="localhost", server_port=port, share=False)
+    demo.launch(server_name="0.0.0.0", server_port=port, share=False)
 
 
 if __name__ == "__main__":

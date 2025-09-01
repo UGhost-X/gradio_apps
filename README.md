@@ -49,10 +49,12 @@ gradio/
    ```
 3. 安装paddle相关依赖
     ```bash
+      conda activate gradio
       pip install paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+      git clone https://gitee.com/paddlepaddle/PaddleX.git
       cd PaddleX
       pip install -e ".[base]"
-      paddlex install paddlets
+      paddlex --install PaddleTS
     ```
 ## 🚀 快速开始
 
