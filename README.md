@@ -43,11 +43,17 @@ gradio/
 
 1. 克隆或下载项目代码
 
-2. 安装所需依赖：
+2. 安装基础依赖：
    ```bash
-    conda env create -f environment.yml
+    conda env create -f environment_linux.yml/environment_win.yml
    ```
-
+3. 安装paddle相关依赖
+    ```bash
+      pip install paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+      cd PaddleX
+      pip install -e ".[base]"
+      paddlex install paddlets
+    ```
 ## 🚀 快速开始
 
 ### 通过主入口启动应用
