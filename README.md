@@ -32,6 +32,7 @@ gradio/
 
 ## 🛠️ 环境要求
 
+- CUDA 11.8 + cuDNN 8.9
 - Python 3.10 
 - Gradio
 - PaddleX
