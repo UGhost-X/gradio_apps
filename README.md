@@ -45,8 +45,7 @@ gradio/
 
 2. 安装所需依赖：
    ```bash
-  conda env create -f environment.yml
-
+    conda env create -f environment.yml
    ```
 
 ## 🚀 快速开始
