@@ -1,0 +1,14 @@
+PaddleX
+gradio
+pandas
+matplotlib
+Pillow
+
+# 其他可能需要的依赖，根据实际情况添加或删除
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+requests
+huggingface_hub
+opencv-python-headless>=4.5.0
