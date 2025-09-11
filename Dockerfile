@@ -31,7 +31,9 @@ COPY . .
 
 WORKDIR /app/PaddleX
 
-RUN pip install -e ".[base]" && \
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install "numpy>=1.22.0" && \
+    pip install -e ".[base]" && \
     pip install paddlets
 
 WORKDIR /app
