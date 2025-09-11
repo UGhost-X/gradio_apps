@@ -32,14 +32,17 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && 
 WORKDIR /app
 COPY . .
 
-# --- 关键修复：设置 PYTHONPATH ---
-# 明确告诉 Python 解释器，PaddleX 的源代码在 /app/PaddleX 目录中
-# 这可以解决 editable install 模式下的 ModuleNotFoundError 问题
-ENV PYTHONPATH "${PYTHONPATH}:/app/PaddleX"
+# --- 最终语法修正：正确设置 PYTHONPATH ---
+# 使用 KEY=VALUE 格式，并确保正确处理空变量的情况
+# 这会告诉 Python 解释器去 /app 和 /app/PaddleX 目录下寻找模块
+ENV PYTHONPATH=/app:/app/PaddleX:${PYTHONPATH}
 
 # 安装基础依赖和 paddlepaddle
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+
+# (可选的诊断步骤) 如果下面仍然失败，取消这一行的注释来查看文件是否存在
+# RUN ls -l /app/PaddleX/paddlex/inference/models/open_vocabulary_segmentation/
 
 # 在同一个 RUN 指令中安装 PaddleX 并立即使用它
 RUN cd /app/PaddleX && \
