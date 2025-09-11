@@ -28,24 +28,25 @@ RUN apt-get update && \
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
     pip install --upgrade pip setuptools wheel
 
-# --- 最终解决方案：原子化安装 ---
-# 将所有东西（requirements, 项目本身, paddlets）放在一个 pip install 命令中
-# 这会强制 pip 的依赖解析器一次性找到所有包的兼容版本
-
+# 设置工作目录并复制所有文件
 WORKDIR /app
 COPY . .
 
-# 在一个指令中安装所有来自标准 PyPI 的包
-# 关键：我们提供了所有约束，让 pip 做出最优解，而不是在已安装的环境上打补丁
-RUN pip install \
-    --no-cache-dir \
-    -r requirements.txt \
-    -e ./PaddleX[base] \
-    paddlets \
-    "numpy==1.26.4"
+# --- 最终、最稳妥的安装流程 ---
 
-# 然后单独安装来自特殊源的 paddlepaddle
-RUN pip install --no-cache-dir paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# 1. 首先安装 requirements.txt 和 paddlepaddle
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+
+# 2. **将 PaddleX 的安装和 PaddleTS 的安装合并到同一个 RUN 指令中**
+#    - 先 cd 到 PaddleX 目录
+#    - 然后执行 pip install -e . 来安装 paddlex 命令
+#    - 紧接着，在同一个 Shell 中，立即使用 paddlex 命令来安装 PaddleTS
+#    - 最后 cd .. 回到 /app 目录
+RUN cd /app/PaddleX && \
+    pip install --no-cache-dir -e ".[base]" && \
+    paddlex --install PaddleTS && \
+    cd ..
 
 # 暴露端口和启动命令
 EXPOSE 35700-37700
