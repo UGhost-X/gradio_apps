@@ -20,25 +20,27 @@ RUN apt-get update && \
     && ln -s /usr/bin/python3.10 /usr/bin/python \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    pip install --upgrade pip setuptools wheel
-
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir "numpy<=1.26.4"
 
-RUN pip install paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install --no-cache-dir paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
 
 COPY . .
 
 WORKDIR /app/PaddleX
-RUN pip install -e ".[base]"
 
-RUN pip install "numpy<=1.26.4" && \
-    pip install paddlets
+RUN pip install --no-cache-dir -e ".[base]"
 
 WORKDIR /app
+
+RUN pip install --no-cache-dir paddlets
 
 EXPOSE 35700-37700
 CMD ["bash", "-c", "tail -f /dev/null"]
