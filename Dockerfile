@@ -17,6 +17,7 @@ RUN apt-get update && \
         libsm6 \
         libxrender1 \
         libxext6 \
+        git \
     && ln -s /usr/bin/python3.10 /usr/bin/python \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +32,14 @@ RUN pip install -r requirements.txt
 
 RUN pip install paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
 
-COPY . .
+COPY requirements.txt ./
+COPY main.py ./
+COPY apps/ ./apps/
+COPY dataset/ ./dataset/
+COPY doc/ ./doc/
+COPY model/ ./model/
+
+RUN git clone https://github.com/PaddlePaddle/PaddleX.git
 
 WORKDIR /app/PaddleX
 
