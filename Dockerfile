@@ -19,18 +19,24 @@ RUN apt-get update && \
         gfortran \
         libopenblas-dev \
         liblapack-dev \
+        pkg-config \
     && ln -s /usr/bin/python3.10 /usr/bin/python \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    pip install --upgrade pip setuptools wheel
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-# 先安装 paddlets，让它自己处理 numpy 依赖
-RUN pip install --no-cache-dir paddlets
+# 关键修复：降级 setuptools 到兼容版本，并安装预编译的核心包
+RUN pip install --upgrade pip && \
+    pip install "setuptools<60" wheel && \
+    pip install --only-binary=:all: "numpy>=1.21.0,<1.25.0" "pandas>=1.3.0" "scipy>=1.7.0"
 
-# 然后安装其他依赖
+# 尝试安装 paddlets，如果失败则使用备选方案
+RUN pip install --no-cache-dir paddlets --prefer-binary || \
+    (pip install --no-cache-dir --no-deps paddlets && echo "Installed paddlets without dependencies")
+
+# 安装其他依赖
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
