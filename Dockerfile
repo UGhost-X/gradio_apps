@@ -35,7 +35,8 @@ COPY . .
 WORKDIR /app/PaddleX
 RUN pip install -e ".[base]"
 
-RUN pip install paddlets
+RUN pip install "numpy<=1.26.4" && \
+    pip install paddlets
 
 WORKDIR /app
 
