@@ -32,17 +32,16 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && 
 WORKDIR /app
 COPY . .
 
-# --- 最终、最稳妥的安装流程 ---
+# --- 关键修复：设置 PYTHONPATH ---
+# 明确告诉 Python 解释器，PaddleX 的源代码在 /app/PaddleX 目录中
+# 这可以解决 editable install 模式下的 ModuleNotFoundError 问题
+ENV PYTHONPATH "${PYTHONPATH}:/app/PaddleX"
 
-# 1. 首先安装 requirements.txt 和 paddlepaddle
+# 安装基础依赖和 paddlepaddle
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
 
-# 2. **将 PaddleX 的安装和 PaddleTS 的安装合并到同一个 RUN 指令中**
-#    - 先 cd 到 PaddleX 目录
-#    - 然后执行 pip install -e . 来安装 paddlex 命令
-#    - 紧接着，在同一个 Shell 中，立即使用 paddlex 命令来安装 PaddleTS
-#    - 最后 cd .. 回到 /app 目录
+# 在同一个 RUN 指令中安装 PaddleX 并立即使用它
 RUN cd /app/PaddleX && \
     pip install --no-cache-dir -e ".[base]" && \
     paddlex --install PaddleTS && \
